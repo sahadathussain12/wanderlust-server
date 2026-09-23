@@ -6,12 +6,12 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
-app.use(cors());
-app.use(express.json());
 dotenv.config();
 const uri = process.env.MONGODB_URI;
 const port = process.env.PORT;
 
+app.use(cors());
+app.use(express.json());
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -26,6 +26,13 @@ async function run() {
     await client.connect();
     const db = client.db("wanderlust");
     const destinationsCollection = db.collection("destinations");
+    const bookingCollection = db.collection('Booking');
+
+    app.post("/bookign", async ( req,res) => {
+      const BookingData = req.body;
+      const result = await bookingCollection.insertOne(BookingData)
+      res.send(result)
+    })
 
     app.get("/destinations", async (req, res) => {
       const destination = await destinationsCollection.find().toArray();
